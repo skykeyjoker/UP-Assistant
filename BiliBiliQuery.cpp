@@ -1,19 +1,57 @@
 #include "BiliBiliQuery.h"
 
-BiliBiliQuery* BiliBiliQuery::instance = nullptr;// static成员需要初始化
-
-BiliBiliQuery::BiliBiliQuery() {
+BiliBiliQuery::BiliBiliQuery(const QVector<Diana::BVideo*>& taskList, QObject* parent) : m_taskList(taskList),
+																						 QObject(parent) {
 }
 
 BiliBiliQuery::~BiliBiliQuery() noexcept {
 	networkAccessManager.deleteLater();
 }
 
-BiliBiliQuery* BiliBiliQuery::getInstance() {
-	if (instance == nullptr) {
-		instance = new BiliBiliQuery;
+void BiliBiliQuery::startQuery() {
+	// 开始查询槽函数
+	for (auto currentTaskItem : m_taskList) {
+		switch (currentTaskItem->getType()) {
+			case Diana::AidVideoType: {
+				// aid task
+				Diana::AidVideo* currentTask = dynamic_cast<Diana::AidVideo*>(currentTaskItem);
+				auto currentBiliBiliCard = getBiliBiliCard(currentTask);
+
+				if (!currentBiliBiliCard.is_null()) {
+					qDebug() << currentBiliBiliCard;
+					m_bilibiliCardList.push_back(currentBiliBiliCard);
+				} else {
+					// TODO 空的卡片
+				}
+
+				break;
+			}
+
+			case Diana::BvidVideoType: {
+				// bvid task
+				Diana::BvidVideo* currentTask = dynamic_cast<Diana::BvidVideo*>(currentTaskItem);
+				auto currentBiliBiliCard = getBiliBiliCard(currentTask);
+
+				if (!currentBiliBiliCard.is_null()) {
+					qDebug() << currentBiliBiliCard;
+					m_bilibiliCardList.push_back(currentBiliBiliCard);
+				} else {
+					// TODO 空的卡片
+				}
+
+				break;
+			}
+
+			default:
+				break;
+		}
+		QThread::sleep(5);// 休息5s后进行下一个任务
 	}
-	return instance;
+
+	// 发送查询结束消息
+	qRegisterMetaType<QVector<BiliBiliCard>>("QVector<BiliBiliCard>");
+	qRegisterMetaType<BiliBiliCard>("BiliBiliCard");
+	emit queryFinished(m_bilibiliCardList);
 }
 
 QString BiliBiliQuery::getCid(const QString& url) {
@@ -42,16 +80,17 @@ QString BiliBiliQuery::getCid(const QString& url) {
 
 BiliBiliCard BiliBiliQuery::getBiliBiliCard(Diana::BVideo* bvideo) {
 	// 通过接口获取当前视频信息
-	// https://api.bilibili.com/x/web-interface/archive/stat?bvid=BV1Mq4y1g7wE
+	// https://api.bilibili.com/x/web-interface/view?bvid=BV1VL411M7N6
 	// https://api.bilibili.com/x/player/online/total?cid=444923218&aid=549331981&bvid=BV1Mq4y1g7wE
 	using Json = nlohmann::json;
 
-	Json statJson; // stat接口
+	Json viewJson; // stat接口
 	Json totalJson;// total接口
-	QString statRequestUrl;
+	QString viewRequestUrl;
 	QString totalRequestUrl;
 	QString url;
 	QString cid;
+	QString title;
 	int view;
 	int danmaku;
 	int reply;
@@ -64,22 +103,23 @@ BiliBiliCard BiliBiliQuery::getBiliBiliCard(Diana::BVideo* bvideo) {
 	switch (bvideo->getType()) {
 		case Diana::BvidVideoType: {
 			// bvid
-			Diana::BvidVideo* currentVideo = dynamic_cast<Diana::BvidVideo*>(bvideo);
-			url = currentVideo->getBvid();
-			cid = currentVideo->getCid();
-			statRequestUrl = "https://api.bilibili.com/x/web-interface/archive/stat?bvid=" + url;
+			//Diana::BvidVideo* currentVideo = dynamic_cast<Diana::BvidVideo*>(bvideo);
+			url = bvideo->getId();
+			cid = bvideo->getCid();
+			viewRequestUrl = "https://api.bilibili.com/x/web-interface/view?bvid=" + url;
 			totalRequestUrl = "https://api.bilibili.com/x/player/online/total?cid=" + cid + "&bvid=" + url;
-			qDebug() << url << cid << statRequestUrl << totalRequestUrl;
+			qDebug() << url << cid << viewRequestUrl << totalRequestUrl;
 
 			break;
 		}
 		case Diana::AidVideoType: {
 			// avid
-			Diana::AidVideo* currentVideo = dynamic_cast<Diana::AidVideo*>(bvideo);
-			url = currentVideo->getAid();
-			cid = currentVideo->getCid();
-			statRequestUrl = "https://api.bilibili.com/x/web-interface/archive/stat?aid=" + url;
+			//Diana::AidVideo* currentVideo = dynamic_cast<Diana::AidVideo*>(bvideo);
+			url = bvideo->getId();
+			cid = bvideo->getCid();
+			viewRequestUrl = "https://api.bilibili.com/x/web-interface/view?aid=" + url;
 			totalRequestUrl = "https://api.bilibili.com/x/player/online/total?cid=" + cid + "&aid=" + url;
+			qDebug() << url << cid << viewRequestUrl << totalRequestUrl;
 
 			break;
 		}
@@ -87,28 +127,26 @@ BiliBiliCard BiliBiliQuery::getBiliBiliCard(Diana::BVideo* bvideo) {
 			break;
 	}
 
-	qDebug() << statRequestUrl;
-	qDebug() << totalRequestUrl;
-
-	// 请求stat接口
-	statJson = getJson(statRequestUrl);
-	if (statJson.is_null())
+	// 请求view接口
+	viewJson = getJson(viewRequestUrl);
+	if (viewJson.is_null())
 		return BiliBiliCard();
 	// 请求total接口
 	totalJson = getJson(totalRequestUrl);
 	if (totalJson.is_null())
 		return BiliBiliCard();
 
-	view = statJson["data"]["view"].get<int>();
-	danmaku = statJson["data"]["danmaku"].get<int>();
-	reply = statJson["data"]["reply"].get<int>();
-	favorite = statJson["data"]["favorite"].get<int>();
-	coin = statJson["data"]["coin"].get<int>();
-	share = statJson["data"]["coin"].get<int>();
-	like = statJson["data"]["like"].get<int>();
+	title = QString::fromStdString(viewJson["data"]["title"].get<std::string>());
+	view = viewJson["data"]["stat"]["view"].get<int>();
+	danmaku = viewJson["data"]["stat"]["danmaku"].get<int>();
+	reply = viewJson["data"]["stat"]["reply"].get<int>();
+	favorite = viewJson["data"]["stat"]["favorite"].get<int>();
+	coin = viewJson["data"]["stat"]["coin"].get<int>();
+	share = viewJson["data"]["stat"]["share"].get<int>();
+	like = viewJson["data"]["stat"]["like"].get<int>();
 	total = QString::fromStdString(totalJson["data"]["total"].get<std::string>()).toInt();
 
-	BiliBiliCard retCard(url, cid, view, danmaku, reply, favorite, coin, share, like, total);
+	BiliBiliCard retCard(url, cid, title, view, danmaku, reply, favorite, coin, share, like, total);
 
 	return retCard;
 }
@@ -144,6 +182,8 @@ nlohmann::json BiliBiliQuery::getJson(const QString& url) {
 	if (code != 0) {
 		qDebug() << "解析返回数据失败，状态码不为0" << url << code;
 		qDebug() << QString::fromStdString(retJson.dump());
+
+		return Json();
 	}
 
 	return retJson;

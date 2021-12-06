@@ -11,7 +11,7 @@ namespace Diana {
 	BVideoType AidVideo::getType() const {
 		return BVideoType::AidVideoType;
 	}
-	QString AidVideo::getAid() const {
+	QString AidVideo::getId() const {
 		return m_aid;
 	}
 	QString AidVideo::getCid() const {
@@ -27,7 +27,7 @@ namespace Diana {
 	BVideoType BvidVideo::getType() const {
 		return BVideoType::BvidVideoType;
 	}
-	QString BvidVideo::getBvid() const {
+	QString BvidVideo::getId() const {
 		return m_bvid;
 	}
 	QString BvidVideo::getCid() const {

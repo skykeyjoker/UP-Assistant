@@ -8,7 +8,7 @@
 
 class BiliBiliCard {
 public:
-	explicit BiliBiliCard(const QString &url, const QString &cid, int view, int danmaku, int reply, int favorite, int coin, int share, int like, int total);
+	explicit BiliBiliCard(const QString &url, const QString &cid, const QString &title, int view, int danmaku, int reply, int favorite, int coin, int share, int like, int total);
 	explicit BiliBiliCard();
 	~BiliBiliCard() = default;
 
@@ -16,6 +16,7 @@ public:
 	bool is_null() const;
 	QString getUrl() const;
 	QString getCid() const;
+	QString getTitle() const;
 	int getView() const;
 	int getDanmaku() const;
 	int getReply() const;
@@ -29,6 +30,7 @@ public:
 private:
 	QString m_url;
 	QString m_cid;
+	QString m_title;
 	int m_view;
 	int m_danmaku;
 	int m_reply;

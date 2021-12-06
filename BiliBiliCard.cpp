@@ -1,8 +1,9 @@
 #include "BiliBiliCard.h"
 
-BiliBiliCard::BiliBiliCard(const QString& url, const QString& cid, int view, int danmaku, int reply, int favorite, int coin, int share, int like, int total)
+BiliBiliCard::BiliBiliCard(const QString& url, const QString& cid, const QString& title, int view, int danmaku, int reply, int favorite, int coin, int share, int like, int total)
 	: m_url(url),
 	  m_cid(cid),
+	  m_title(title),
 	  m_view(view),
 	  m_danmaku(danmaku),
 	  m_reply(reply),
@@ -19,6 +20,9 @@ QString BiliBiliCard::getUrl() const {
 }
 QString BiliBiliCard::getCid() const {
 	return m_cid;
+}
+QString BiliBiliCard::getTitle() const {
+	return m_title;
 }
 int BiliBiliCard::getView() const {
 	return m_view;

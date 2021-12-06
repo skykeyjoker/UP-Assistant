@@ -3,39 +3,43 @@
 
 #include <QDebug>
 #include <QEventLoop>
+#include <QMetaType>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QObject>
-#include <memory>
 
 #include "BVideo.h"
 #include "BiliBiliCard.h"
 #include "json.hpp"
 
+// TODO 更改运行机制，使用多线程
+
 class BiliBiliQuery : public QObject {
 	Q_OBJECT
 
 public:
-	static BiliBiliQuery* getInstance();
-
-private:
-	BiliBiliQuery();
-	~BiliBiliQuery();
-	BiliBiliQuery(const BiliBiliQuery&) = default;
-	BiliBiliQuery& operator=(const BiliBiliQuery&) = default;
+	explicit BiliBiliQuery(const QVector<Diana::BVideo*>& taskList, QObject* parent = nullptr);
+	BiliBiliQuery::~BiliBiliQuery() noexcept;
 
 public:
 	QString getCid(const QString& url);
-	BiliBiliCard getBiliBiliCard(Diana::BVideo* bvideo);
+
+signals:
+	void queryFinished(QVector<BiliBiliCard> bilibiliCardList);
+
+public slots:
+	void startQuery();
 
 private:
+	BiliBiliCard getBiliBiliCard(Diana::BVideo* bvideo);
+
 	nlohmann::json getJson(const QString& url);
 
 private:
-	static BiliBiliQuery* instance;
+	const QVector<Diana::BVideo*>& m_taskList;// 任务列表
+	QVector<BiliBiliCard> m_bilibiliCardList; // 视频信息列表
 
-private:
 	QNetworkAccessManager networkAccessManager;
 };
 

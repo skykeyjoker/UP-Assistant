@@ -14,10 +14,12 @@ namespace Diana {
 	class BVideo {
 	public:
 		explicit BVideo() = default;
-		~BVideo() noexcept;
+		virtual ~BVideo() noexcept = 0;
 
 	public:
 		virtual BVideoType getType() const = 0;
+		virtual QString getId() const = 0;
+		virtual QString getCid() const = 0;
 	};
 
 	class AidVideo : public BVideo {
@@ -27,7 +29,7 @@ namespace Diana {
 
 	public:
 		BVideoType getType() const;
-		QString getAid() const;
+		QString getId() const;
 		QString getCid() const;
 
 	private:
@@ -42,7 +44,7 @@ namespace Diana {
 
 	public:
 		BVideoType getType() const;
-		QString getBvid() const;
+		QString getId() const;
 		QString getCid() const;
 
 	private:
