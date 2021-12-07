@@ -1,9 +1,38 @@
-# UP-Assistant
+<h1 align="center">UP-Assistant UP主小助手</h1>
 
-获取视频信息：
-https://api.bilibili.com/x/web-interface/view?bvid=BV1VL411M7N6
+<p align="center">
+    <a href="https://github.com/skykeyjoker/UP-Assistant/stargazers" style="text-decoration:none">
+        <img src="https://img.shields.io/github/stars/skykeyjoker/UP-Assistant.svg" alt="GitHub stars"/>
+    </a>
+    <a href="https://github.com/skykeyjoker/UP-Assistant/network" style="text-decoration:none" >
+        <img src="https://img.shields.io/github/forks/skykeyjoker/UP-Assistant.svg" alt="GitHub forks"/>
+    </a>
+    <a href="https://github.com/skykeyjoker/UP-Assistant/releases" style="text-decoration:none" >
+        <img src="https://img.shields.io/github/downloads/skykeyjoker/UP-Assistant/latest/total.svg" alt="GitHub release download"/>
+    </a>
+    <a href="https://github.com/skykeyjoker/UP-Assistant/blob/master/LICENSE" style="text-decoration:none" >
+        <img src="https://img.shields.io/badge/License-MIT-flat.svg" alt="GitHub license"/>
+    </a>
+</p>
 
-```json
+UP主小助手，监控并定期导出视频数据。
+
+提供交互友好型用户界面。（有图形界面，没图形界面的为什么不用Pyhton？）
+
+支持自定义查询数据频率。
+
+## 如何使用
+
+进入release界面下载最新版本，解压后即可运行。
+
+可编辑目录下的*config.json*文件，设置`timeout`字段，以设置查询频率（以分钟为单位，默认10min）。
+
+## 使用到的B站API接口
+
+获取视频信息：https://api.bilibili.com/x/web-interface/view?bvid=BV1VL411M7N6
+<details>
+<summary>展开查看</summary>
+<pre><code>
 {
   "code": 0,
   "message": "0",
@@ -147,12 +176,43 @@ https://api.bilibili.com/x/web-interface/view?bvid=BV1VL411M7N6
     "honor_reply": {}
   }
 }
-```
+</code></pre>
+</details>
+
+获取视频CID：https://api.bilibili.com/x/player/pagelist?bvid=BV1Mq4y1g7wE&jsonp=jsonp
+<details>
+<summary>展开查看</summary>
+<pre><code>
+{
+  "code": 0,
+  "message": "0",
+  "ttl": 1,
+  "data": [
+    {
+      "cid": 444923218,
+      "page": 1,
+      "from": "vupload",
+      "part": "《原神》小剧场——「蒙德茶会」第四期",
+      "duration": 2818,
+      "vid": "",
+      "weblink": "",
+      "dimension": {
+        "width": 1920,
+        "height": 1080,
+        "rotate": 0
+      },
+      "first_frame": "http://i1.hdslb.com/bfs/storyff/n211119a2isrra3cu85zl1yp8yvl07o4_firsti.jpg"
+    }
+  ]
+}
+</code></pre>
+</details>
 
 获取正在观看人数：
 https://api.bilibili.com/x/player/online/total?aid=549331981&cid=444923218&bvid=BV1Mq4y1g7wE
-
-```json
+<details>
+<summary>展开查看</summary>
+<pre><code>
 {
   "code": 0,
   "message": "0",
@@ -169,4 +229,11 @@ https://api.bilibili.com/x/player/online/total?aid=549331981&cid=444923218&bvid=
     }
   }
 }
-```
+</code></pre>
+</details>
+
+## 友情链接
+
+[现代化JSON解析库：nlohmann json](https://github.com/nlohmann/json)
+
+[哔哩哔哩-API收集整理](https://github.com/SocialSisterYi/bilibili-API-collect) （感谢整理的API）
