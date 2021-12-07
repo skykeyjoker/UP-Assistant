@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(UP_Assistant)
+project(UP-Assistant)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -28,6 +28,6 @@ endif ()
 qt5_add_resources(QRC_FILES res.qrc)
 set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/logo.rc")
 
-add_executable(UP_Assistant WIN32 ${QRC_FILES} ${APP_ICON_RESOURCE_WINDOWS} main.cpp UpAssistantWidget.cpp UpAssistantWidget.h 3rd/json.hpp BVideo.cpp BVideo.h BiliBiliQuery.cpp BiliBiliQuery.h BiliBiliCard.cpp BiliBiliCard.h NewTaskDialog.cpp NewTaskDialog.h)
+add_executable(UP-Assistant WIN32 ${QRC_FILES} ${APP_ICON_RESOURCE_WINDOWS} main.cpp UpAssistantWidget.cpp UpAssistantWidget.h 3rd/json.hpp BVideo.cpp BVideo.h BiliBiliQuery.cpp BiliBiliQuery.h BiliBiliCard.cpp BiliBiliCard.h NewTaskDialog.cpp NewTaskDialog.h)
 
-target_link_libraries(UP_Assistant Qt5::Widgets Qt5::Network Qt5::Core)
+target_link_libraries(UP-Assistant Qt5::Widgets Qt5::Network Qt5::Core)
