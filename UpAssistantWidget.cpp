@@ -375,6 +375,8 @@ void UpAssistantWidget::slotNewTaskAdded(int type, QString id) {
 				qDebug() << configFile.resize(0);// 清空文件
 				configFile.write(writeData);
 
+				le_TaskNum->setText(tr("当前共有%1个任务").arg(m_taskList.count()));
+
 			} else {
 				// 解析配置文件失败
 				QMessageBox::critical(this, "添加任务失败", "无法解析配置文件，请检查运行目录下的config.json文件！");
@@ -417,6 +419,8 @@ void UpAssistantWidget::slotBtnDelTaskClicked() {
 			break;
 		}
 	}
+
+	le_TaskNum->setText(tr("当前共有%1个任务").arg(m_taskList.count()));
 
 	// 保存配置文件
 	using Json = nlohmann::json;

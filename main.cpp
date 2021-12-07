@@ -1,5 +1,7 @@
 #include <QApplication>
 
+#pragma comment(linker, "/subsystem:\"windows\" /entry:\"mainCRTStartup\"")// Hide app
+
 #include "UpAssistantWidget.h"
 
 int main(int argc, char* argv[]) {
