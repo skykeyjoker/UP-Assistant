@@ -13,8 +13,6 @@
 #include "BiliBiliCard.h"
 #include "json.hpp"
 
-// TODO 更改运行机制，使用多线程
-
 class BiliBiliQuery : public QObject {
 	Q_OBJECT
 

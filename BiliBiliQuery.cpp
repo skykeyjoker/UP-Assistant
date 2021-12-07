@@ -21,7 +21,7 @@ void BiliBiliQuery::startQuery() {
 					qDebug() << currentBiliBiliCard;
 					m_bilibiliCardList.push_back(currentBiliBiliCard);
 				} else {
-					// TODO 空的卡片
+					// 空的卡片，不做任何操作
 				}
 
 				break;
@@ -36,7 +36,7 @@ void BiliBiliQuery::startQuery() {
 					qDebug() << currentBiliBiliCard;
 					m_bilibiliCardList.push_back(currentBiliBiliCard);
 				} else {
-					// TODO 空的卡片
+					// 空的卡片，不做任何操作
 				}
 
 				break;

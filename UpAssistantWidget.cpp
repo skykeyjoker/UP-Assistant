@@ -17,7 +17,6 @@ UpAssistantWidget::UpAssistantWidget(QWidget* parent) : QMainWindow(parent) {
 	// 开启定时任务，定时查询
 	m_timer = new QTimer(this);
 	connect(m_timer, &QTimer::timeout, this, &UpAssistantWidget::slotTimeOut);
-	// TODO 正式部署时更改时钟间隔
 	m_timer->start(m_timeOut * 60 * 1000);// m_timeOut以分钟为单位
 										  //m_timer->start(20000);
 }
@@ -225,15 +224,21 @@ void UpAssistantWidget::slotTimeOut() {
 	QThread* currentQueryThread = new QThread;
 	currentQueryTask->moveToThread(currentQueryThread);
 
+	connect(currentQueryThread, &QThread::started,
+			currentQueryTask, &BiliBiliQuery::startQuery);
+
 	qRegisterMetaType<QVector<BiliBiliCard>>("QVector<BiliBiliCard>");
 	qRegisterMetaType<BiliBiliCard>("BiliBiliCard");
-	connect(currentQueryThread, &QThread::started, currentQueryTask, &BiliBiliQuery::startQuery);
-	connect(currentQueryTask, qOverload<QVector<BiliBiliCard>>(&BiliBiliQuery::queryFinished),
-			this, qOverload<QVector<BiliBiliCard>>(&UpAssistantWidget::writeLog));
-	connect(currentQueryTask, qOverload<QVector<BiliBiliCard>>(&BiliBiliQuery::queryFinished),
+	connect(currentQueryTask, QOverload<QVector<BiliBiliCard>>::of(&BiliBiliQuery::queryFinished),
+			this, QOverload<QVector<BiliBiliCard>>::of(&UpAssistantWidget::writeLog));
+
+	connect(currentQueryTask, QOverload<QVector<BiliBiliCard>>::of(&BiliBiliQuery::queryFinished),
 			currentQueryThread, &QThread::quit);
-	connect(currentQueryThread, &QThread::finished, currentQueryThread, &QThread::deleteLater);
-	connect(currentQueryTask, qOverload<QVector<BiliBiliCard>>(&BiliBiliQuery::queryFinished),
+
+	connect(currentQueryThread, &QThread::finished,
+			currentQueryThread, &QThread::deleteLater);
+
+	connect(currentQueryTask, QOverload<QVector<BiliBiliCard>>::of(&BiliBiliQuery::queryFinished),
 			currentQueryTask, &BiliBiliQuery::deleteLater);
 
 	currentQueryThread->start();
@@ -296,8 +301,10 @@ void UpAssistantWidget::writeLog(QVector<BiliBiliCard> bilibiliCardList) {
 // 添加新任务槽函数
 void UpAssistantWidget::slotBtnNewTaskClicked() {
 	NewTaskDialog* newTaskDialog = new NewTaskDialog(this);
-	connect(newTaskDialog, qOverload<int, QString>(&NewTaskDialog::sigNewTaskAdded),
-			this, qOverload<int, QString>(&UpAssistantWidget::slotNewTaskAdded));
+
+	connect(newTaskDialog, QOverload<int, QString>::of(&NewTaskDialog::sigNewTaskAdded),
+			this, QOverload<int, QString>::of(&UpAssistantWidget::slotNewTaskAdded));
+
 	newTaskDialog->exec();
 }
 
