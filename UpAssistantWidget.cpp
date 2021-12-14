@@ -17,8 +17,8 @@ UpAssistantWidget::UpAssistantWidget(QWidget* parent) : QMainWindow(parent) {
 	// 开启定时任务，定时查询
 	m_timer = new QTimer(this);
 	connect(m_timer, &QTimer::timeout, this, &UpAssistantWidget::slotTimeOut);
-	//m_timer->start(m_timeOut * 60 * 1000);// m_timeOut以分钟为单位
-	m_timer->start(20000);
+	m_timer->start(m_timeOut * 60 * 1000);// m_timeOut以分钟为单位
+										  //m_timer->start(20000);
 }
 
 // 加载设置
