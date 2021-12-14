@@ -17,8 +17,8 @@ UpAssistantWidget::UpAssistantWidget(QWidget* parent) : QMainWindow(parent) {
 	// 开启定时任务，定时查询
 	m_timer = new QTimer(this);
 	connect(m_timer, &QTimer::timeout, this, &UpAssistantWidget::slotTimeOut);
-	m_timer->start(m_timeOut * 60 * 1000);// m_timeOut以分钟为单位
-										  //m_timer->start(20000);
+	//m_timer->start(m_timeOut * 60 * 1000);// m_timeOut以分钟为单位
+	m_timer->start(20000);
 }
 
 // 加载设置
@@ -176,22 +176,33 @@ void UpAssistantWidget::initLog() {
 		qDebug() << "创建日志文件" << m_logFileName;
 		// 格式化日志文件内容
 		QXlsx::Document logXlsx;
-		Format format;
-		format.setHorizontalAlignment(Format::AlignHCenter);
-		format.setVerticalAlignment(Format::AlignVCenter);
 
-		logXlsx.write("A1", "ID", format);
-		logXlsx.write("B1", "CID", format);
-		logXlsx.write("C1", "标题", format);
-		logXlsx.write("D1", "点赞数", format);
-		logXlsx.write("E1", "评论数", format);
-		logXlsx.write("F1", "收藏数", format);
-		logXlsx.write("G1", "投币数", format);
-		logXlsx.write("H1", "分享数", format);
-		logXlsx.write("I1", "弹幕数", format);
-		logXlsx.write("J1", "播放量", format);
-		logXlsx.write("K1", "正在观看", format);
+		// 写入Header
+		Format header;
+		header.setFontBold(true);
+		header.setFontSize(12);
+		header.setHorizontalAlignment(Format::AlignHCenter);
+		header.setVerticalAlignment(Format::AlignVCenter);
+		logXlsx.write("A1", "ID", header);
+		logXlsx.write("B1", "CID", header);
+		logXlsx.write("C1", "标题", header);
+		logXlsx.write("D1", "点赞数", header);
+		logXlsx.write("E1", "评论数", header);
+		logXlsx.write("F1", "收藏数", header);
+		logXlsx.write("G1", "投币数", header);
+		logXlsx.write("H1", "分享数", header);
+		logXlsx.write("I1", "弹幕数", header);
+		logXlsx.write("J1", "播放量", header);
+		logXlsx.write("K1", "正在观看", header);
 
+		// 设置列宽行宽
+		logXlsx.setRowHeight(1, 40.0);
+		logXlsx.setColumnWidth(1, 13.0);
+		logXlsx.setColumnWidth(2, 9.0);
+		logXlsx.setColumnWidth(3, 45.0);
+		logXlsx.setColumnWidth(4, 11, 9.0);
+
+		// 保存文件
 		if (logXlsx.saveAs(m_logFileName)) {
 			qDebug() << "[debug] success to write xlsx file";
 		} else {
@@ -255,10 +266,17 @@ void UpAssistantWidget::writeLog(QVector<BiliBiliCard> bilibiliCardList) {
 
 	// 写入时间信息
 	logFile.write(QString(tr("A%1").arg(QString::number(m_newLineIndex))), QDateTime::currentDateTime().toString("yyyy/MM/dd hh:mm:ss"));
-	Format format;
-	format.setHorizontalAlignment(Format::AlignHCenter);
-	format.setVerticalAlignment(Format::AlignVCenter);
-	logFile.mergeCells(QString(tr("A%1:K%2").arg(QString::number(m_newLineIndex)).arg(QString::number(m_newLineIndex))), format);
+	Format header;
+	header.setFontSize(12);
+	header.setHorizontalAlignment(Format::AlignHCenter);
+	header.setVerticalAlignment(Format::AlignVCenter);
+	logFile.mergeCells(QString(tr("A%1:K%2").arg(QString::number(m_newLineIndex)).arg(QString::number(m_newLineIndex))), header);
+	// 设置列宽行宽
+	logFile.setColumnWidth(1, 13.0);
+	logFile.setColumnWidth(2, 9.0);
+	logFile.setColumnWidth(3, 45.0);
+	logFile.setColumnWidth(4, 11, 9.0);
+	logFile.setRowHeight(m_newLineIndex, 30.0);
 	m_newLineIndex++;
 
 	// 写入每条新日志
@@ -273,7 +291,7 @@ void UpAssistantWidget::writeLog(QVector<BiliBiliCard> bilibiliCardList) {
 		int currentShare = currentLog.getShare();
 		int currentDanmaku = currentLog.getDanmaku();
 		int currentView = currentLog.getView();
-		int currentTotal = currentLog.getTotal();
+		QString currentTotal = currentLog.getTotal();
 
 		logFile.write(QString(tr("A%1").arg(QString::number(m_newLineIndex))), currentId);
 		logFile.write(QString(tr("B%1").arg(QString::number(m_newLineIndex))), currentCid);

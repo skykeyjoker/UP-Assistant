@@ -98,7 +98,7 @@ BiliBiliCard BiliBiliQuery::getBiliBiliCard(Diana::BVideo* bvideo) {
 	int coin;
 	int share;
 	int like;
-	int total;
+	QString total;
 
 	switch (bvideo->getType()) {
 		case Diana::BvidVideoType: {
@@ -144,7 +144,7 @@ BiliBiliCard BiliBiliQuery::getBiliBiliCard(Diana::BVideo* bvideo) {
 	coin = viewJson["data"]["stat"]["coin"].get<int>();
 	share = viewJson["data"]["stat"]["share"].get<int>();
 	like = viewJson["data"]["stat"]["like"].get<int>();
-	total = QString::fromStdString(totalJson["data"]["total"].get<std::string>()).toInt();
+	total = QString::fromStdString(totalJson["data"]["total"].get<std::string>());
 
 	BiliBiliCard retCard(url, cid, title, view, danmaku, reply, favorite, coin, share, like, total);
 

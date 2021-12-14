@@ -8,7 +8,7 @@
 
 class BiliBiliCard {
 public:
-	explicit BiliBiliCard(const QString &url, const QString &cid, const QString &title, int view, int danmaku, int reply, int favorite, int coin, int share, int like, int total);
+	explicit BiliBiliCard(const QString &url, const QString &cid, const QString &title, int view, int danmaku, int reply, int favorite, int coin, int share, int like, const QString &total);
 	explicit BiliBiliCard();
 	~BiliBiliCard() = default;
 
@@ -24,7 +24,7 @@ public:
 	int getCoin() const;
 	int getShare() const;
 	int getLike() const;
-	int getTotal() const;
+	QString getTotal() const;
 	friend std::ostream &operator<<(std::ostream &os, const BiliBiliCard &card);
 
 private:
@@ -38,7 +38,7 @@ private:
 	int m_coin;
 	int m_share;
 	int m_like;
-	int m_total;
+	QString m_total;
 	bool m_is_null;
 };
 
